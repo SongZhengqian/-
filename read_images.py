@@ -12,11 +12,13 @@ from matplotlib import pyplot as plt
 # 读入图片，灰度化
 img = cv2.imread('C:\\Users\\Y\\Desktop\\szq0.png')
 # 预处理函数
+
+
 def preprocess(img):
     # filter 2D
-    kernel = np.ones((5, 5), np.float32) / 25
-    dst = cv2.filter2D(img, -1, kernel)
-    gray = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
+    # kernel = np.ones((5, 5), np.float32) / 25
+    # dst = cv2.filter2D(img, -1, kernel)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Harris角点检测
 
     # 中值滤波
@@ -42,16 +44,18 @@ def preprocess(img):
     # 腐蚀一次，去掉细节
     erosion = cv2.erode(dilation, kernel1, iterations=3)
     # 再次膨胀，让轮廓明显一些
-    dilation2 = cv2.dilate(erosion, kernel2, iterations=7)
+    dilation2 = cv2.dilate(erosion, kernel2, iterations=3)
     # kernel_e = np.ones((3, 3), np.uint8)
+    dilation2 = cv2.bitwise_not(dilation2)
     return dilation2
 
 
-#blurred = cv2.GaussianBlur(dilation2, (9, 9),0)
+dilation2 = preprocess(img)
+# blurred = cv2.GaussianBlur(dilation2, (9, 9),0)
 # 中值滤波
-#img_median = cv2.medianBlur(blurred, 7)
+# img_median = cv2.medianBlur(blurred, 7)
 # canny边缘检测
-#edges = cv2.Canny(dilation2, 100, 200)
+# edges = cv2.Canny(dilation2, 100, 200)
 # findContours
 # 函数只接受二值图像，cv2.RETR_TREE表示建立一个等级树结构的轮廓
 # cv2.CHAIN_APPROX_SIMPLE为轮廓的近似方法,一个矩形轮廓只需4个点来保存轮廓信息
@@ -61,7 +65,7 @@ def preprocess(img):
 image, contours, hierarchy = cv2.findContours(dilation2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 print("contours size: ", len(contours))
 # -1表示绘制所以轮廓，(0, 0, 255)表示红色，3表示线宽
-cont = cv2.drawContours(img, contours, -1, (0,255,0), 3)
+#cont = cv2.drawContours(img, contours, -1, (0,255,0), 3)
 # drawContour
 # 将所有轮廓按照面积大小排序
 c = sorted(contours, key=cv2.contourArea, reverse=True)[0] #数字代表第几个区域
@@ -80,7 +84,7 @@ draw_img = cv2.drawContours(img.copy(), [box], -1, (0, 0, 255), 3)
 #     cv2.drawContours(img, [box], -1, (0, 0, 255), 5)
 
 # BGR->HSV
-hsv=cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 c = sorted(contours, key=cv2.contourArea, reverse=True)[0]
 
@@ -112,7 +116,7 @@ crop_img= img[y1:y1 + height, x1:x1 + width]
 
 # 显示
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-cv2.imshow('image', hsv)
+cv2.imshow('image', crop_img)
 cv2.waitKey(delay=0)
 cv2.destroyAllWindows()
 
