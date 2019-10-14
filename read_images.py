@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+import pytesseract
+
+# -*- coding: UTF-8 -*-
 # img:原始图像
 # gray:灰度图像
 # blurred：高斯模糊之后
@@ -113,6 +116,11 @@ crop_img= img[y1:y1 + height, x1:x1 + width]
 # plt.subplot(224), plt.imshow(markers1)
 # #plt.xlim([0,256])
 #plt.show()
+
+text = pytesseract.image_to_string(crop_img, lang='chi_sim')
+print(text)
+
+
 
 # 显示
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
